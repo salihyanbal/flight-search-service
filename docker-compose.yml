@@ -1,0 +1,37 @@
+version: '3.5'
+
+
+services:
+  postgres:
+    container_name: postgres
+    image: postgres:latest
+    restart: always
+    environment:
+      POSTGRES_USER: case_user
+      POSTGRES_PASSWORD: case1234
+      POSTGRES_DB: case
+    volumes:
+      - postgres-db:/data/case
+    ports:
+      - "5432:5432"
+    platform: linux/arm64
+  flight_search_service:
+    container_name: flight_search_service
+    image: flight_search_service:latest
+    restart: always
+    build:
+      context: ./
+      dockerfile: Dockerfile
+      args:
+        JAR_FILE: flight_search_service.jar
+    depends_on:
+      - postgres
+    environment:
+      SPRING_PROFILES_ACTIVE: local
+    ports:
+      - "8080:8080"
+    platform: linux/arm64
+
+volumes:
+  postgres-db:
+    driver: local
