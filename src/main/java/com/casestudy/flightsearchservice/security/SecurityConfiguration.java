@@ -27,7 +27,8 @@ public class SecurityConfiguration {
                         auth -> auth
                                 .requestMatchers(
                                         "/auth/login",
-                                        "/auth/register"
+                                        "/auth/register",
+                                        "/swagger/**"
                                 ).permitAll()
                                 .anyRequest().authenticated()
                 ).sessionManagement(
