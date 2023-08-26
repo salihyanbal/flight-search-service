@@ -20,3 +20,11 @@ server:
 external:
   url:
     daily-flights: http://localhost:3000/flights
+
+#Open API v3 Config
+springdoc:
+  api-docs:
+    path: /swagger/api-docs
+  swagger-ui:
+    path: /swagger/index.html
+    url: /swagger/flight-search-service-docs.yml

@@ -1,0 +1,671 @@
+openapi: 3.0.1
+info:
+  title: Flight Search Service
+  version: v1
+servers:
+  - url: http://localhost:8080/api
+    description: localhost
+security:
+  - BearerToken: []
+paths:
+  /auth/register:
+    post:
+      tags:
+        - auth
+      operationId: register
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequestDto'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/TokenResponseDto'
+        'default':
+          $ref: '#/components/schemas/ErrorResponse'
+
+  /auth/login:
+    post:
+      tags:
+        - auth
+      operationId: login
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequestDto'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/TokenResponseDto'
+        'default':
+          $ref: '#/components/schemas/ErrorResponse'
+  /auth/password:
+    put:
+      tags:
+        - auth
+      operationId: changePassword
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PasswordChangeRequestDto'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/UserResponseDto'
+        'default':
+          $ref: '#/components/schemas/ErrorResponse'
+  /user/{id}:
+    get:
+      tags:
+        - user
+      operationId: findUserById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/UserResponseDto'
+        'default':
+          $ref: '#/components/schemas/ErrorResponse'
+    delete:
+      tags:
+        - user
+      operationId: deleteUser
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+  /user:
+    get:
+      tags:
+        - user
+      operationId: findAllUsers
+      parameters:
+        - name: pageNumber
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 0
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 10
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/PageResponseUserResponseDto'
+        'default':
+          $ref: '#/components/schemas/ErrorResponse'
+  /user/email/{email}:
+    get:
+      tags:
+        - user
+      operationId: findUserByEmail
+      parameters:
+        - name: email
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/UserResponseDto'
+        'default':
+          $ref: '#/components/schemas/ErrorResponse'
+  /user/role:
+    put:
+      tags:
+        - user
+      operationId: setUserRole
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRoleChangeRequest'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/UserResponseDto'
+        'default':
+          $ref: '#/components/schemas/ErrorResponse'
+  /flight/{id}:
+    get:
+      tags:
+        - flight
+      operationId: findFlightById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/FlightResponseDto'
+        'default':
+          $ref: '#/components/schemas/ErrorResponse'
+    put:
+      tags:
+        - flight
+      operationId: updateFlight
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FlightRequestDto'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/FlightResponseDto'
+        'default':
+          $ref: '#/components/schemas/ErrorResponse'
+    delete:
+      tags:
+        - flight
+      operationId: deleteFlight
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+        'default':
+          $ref: '#/components/schemas/ErrorResponse'
+  /flight:
+    get:
+      tags:
+        - flight
+      operationId: findAllFlights
+      parameters:
+        - name: pageNumber
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 0
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 10
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/PageResponseFlightResponseDto'
+        'default':
+          $ref: '#/components/schemas/ErrorResponse'
+    post:
+      tags:
+        - flight
+      operationId: createFlight
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FlightRequestDto'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/FlightResponseDto'
+        'default':
+          $ref: '#/components/schemas/ErrorResponse'
+  /flight/search:
+    post:
+      tags:
+        - flight
+      operationId: searchFlight
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FlightSearchRequestDto'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/FlightSearchResponseDto'
+        'default':
+          $ref: '#/components/schemas/ErrorResponse'
+  /airport/{id}:
+    get:
+      tags:
+        - airport
+      operationId: findAirportById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/AirportResponseDto'
+        'default':
+          $ref: '#/components/schemas/ErrorResponse'
+    put:
+      tags:
+        - airport
+      operationId: updateAirport
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AirportRequestDto'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/AirportResponseDto'
+        'default':
+          $ref: '#/components/schemas/ErrorResponse'
+    delete:
+      tags:
+        - airport
+      operationId: deleteAirport
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+        'default':
+          $ref: '#/components/schemas/ErrorResponse'
+  /airport:
+    get:
+      tags:
+        - airport
+      operationId: findAllAirports
+      parameters:
+        - name: pageNumber
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 0
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 10
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/PageResponseAirportResponseDto'
+        'default':
+          $ref: '#/components/schemas/ErrorResponse'
+    post:
+      tags:
+        - airport
+      operationId: createAirport
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AirportRequestDto'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/AirportResponseDto'
+        'default':
+          $ref: '#/components/schemas/ErrorResponse'
+  /airport/code/{airportCode}:
+    get:
+      tags:
+        - airport
+      operationId: findAirportByAirportCode
+      parameters:
+        - name: airportCode
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/AirportResponseDto'
+        'default':
+          $ref: '#/components/schemas/ErrorResponse'
+components:
+  securitySchemes:
+    BearerToken:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    UserRoleChangeRequest:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        userRole:
+          type: string
+          enum:
+            - USER
+            - ADMIN
+    UserResponseDto:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+        role:
+          type: string
+          enum:
+            - USER
+            - ADMIN
+    FlightRequestDto:
+      required:
+        - arrivalAirportCode
+        - arrivalDateTime
+        - departureAirportCode
+        - departureDateTime
+        - price
+      type: object
+      properties:
+        departureAirportCode:
+          type: string
+        arrivalAirportCode:
+          type: string
+        departureDateTime:
+          type: string
+          format: date-time
+        arrivalDateTime:
+          type: string
+          format: date-time
+        price:
+          type: number
+          format: double
+    FlightResponseDto:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        departureAirportCode:
+          type: string
+        destinationAirportCode:
+          type: string
+        departureDateTime:
+          type: string
+          format: date-time
+        arrivalDateTime:
+          type: string
+          format: date-time
+        price:
+          type: number
+          format: double
+    PasswordChangeRequestDto:
+      type: object
+      properties:
+        oldPassword:
+          maxLength: 40
+          minLength: 0
+          type: string
+        newPassword:
+          maxLength: 40
+          minLength: 0
+          type: string
+    AirportRequestDto:
+      required:
+        - airportCode
+        - city
+      type: object
+      properties:
+        city:
+          maxLength: 100
+          minLength: 0
+          type: string
+        airportCode:
+          maxLength: 5
+          minLength: 0
+          type: string
+    AirportResponseDto:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        city:
+          type: string
+        airportCode:
+          type: string
+    FlightSearchRequestDto:
+      required:
+        - departOn
+        - departureAirportCode
+        - destinationAirportCode
+      type: object
+      properties:
+        departureAirportCode:
+          type: string
+        destinationAirportCode:
+          type: string
+        departOn:
+          type: string
+          format: date
+        returnOn:
+          type: string
+          format: date
+    FlightSearchResponseDto:
+      type: object
+      properties:
+        departureFlights:
+          type: array
+          items:
+            $ref: '#/components/schemas/FlightResponseDto'
+        returnFlights:
+          type: array
+          items:
+            $ref: '#/components/schemas/FlightResponseDto'
+    RegisterRequestDto:
+      type: object
+      properties:
+        firstName:
+          maxLength: 100
+          minLength: 0
+          type: string
+        lastName:
+          maxLength: 100
+          minLength: 0
+          type: string
+        email:
+          maxLength: 150
+          minLength: 0
+          type: string
+        password:
+          maxLength: 40
+          minLength: 0
+          type: string
+    TokenResponseDto:
+      type: object
+      properties:
+        token:
+          type: string
+        user:
+          $ref: '#/components/schemas/UserResponseDto'
+    LoginRequestDto:
+      type: object
+      properties:
+        email:
+          maxLength: 150
+          minLength: 0
+          type: string
+        password:
+          maxLength: 40
+          minLength: 0
+          type: string
+    PageResponseUserResponseDto:
+      type: object
+      properties:
+        pageNumber:
+          type: integer
+          format: int32
+        pageSize:
+          type: integer
+          format: int32
+        count:
+          type: integer
+          format: int32
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserResponseDto'
+    PageResponseFlightResponseDto:
+      type: object
+      properties:
+        pageNumber:
+          type: integer
+          format: int32
+        pageSize:
+          type: integer
+          format: int32
+        count:
+          type: integer
+          format: int32
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/FlightResponseDto'
+    PageResponseAirportResponseDto:
+      type: object
+      properties:
+        pageNumber:
+          type: integer
+          format: int32
+        pageSize:
+          type: integer
+          format: int32
+        count:
+          type: integer
+          format: int32
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/AirportResponseDto'
+    ErrorResponse:
+      type: object
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+        code:
+          type: string
+        message:
+          type: string
