@@ -10,11 +10,14 @@ import com.casestudy.flightsearchservice.model.enums.ErrorCodeEnum;
 import com.casestudy.flightsearchservice.model.enums.UserRoleEnum;
 import com.casestudy.flightsearchservice.model.service.TokenModel;
 import com.casestudy.flightsearchservice.repository.UserRepository;
+import com.casestudy.flightsearchservice.security.CustomUserDetails;
+import com.casestudy.flightsearchservice.security.helper.TokenHelper;
 import com.casestudy.flightsearchservice.service.UserService;
 import com.casestudy.flightsearchservice.util.PageUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +28,9 @@ import java.util.UUID;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+
+    private final TokenHelper tokenHelper;
+
     private final PasswordEncoder passwordEncoder;
 
     @Override
@@ -43,7 +49,8 @@ public class UserServiceImpl implements UserService {
                 .role(UserRoleEnum.USER)
                 .build();
         User createdUser = createUser(userToSave);
-        String token = "";
+        UserDetails userDetails = new CustomUserDetails(createdUser);
+        String token = tokenHelper.generateToken(userDetails);
         TokenModel tokenModel = TokenModel.builder()
                 .token(token)
                 .user(createdUser)
@@ -55,7 +62,8 @@ public class UserServiceImpl implements UserService {
     public TokenModel login(LoginRequestDto loginRequestDto) {
         User foundUser = findByEmail(loginRequestDto.getEmail());
         validatePassword(loginRequestDto.getPassword(), foundUser.getPassword());
-        String token = "";
+        UserDetails userDetails = new CustomUserDetails(foundUser);
+        String token = tokenHelper.generateToken(userDetails);
         TokenModel tokenModel = TokenModel.builder()
                 .token(token)
                 .user(foundUser)
