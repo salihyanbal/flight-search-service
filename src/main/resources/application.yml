@@ -8,10 +8,15 @@ spring:
     show-sql: true
     hibernate:
       ddl-auto: update
-
+  security:
+    secret-key: "case-security-secret-case-security-secret"
 server:
   port: 8080
   servlet:
     context-path: /api
   error:
     include-stacktrace: never
+
+external:
+  url:
+    daily-flights: http://localhost:3000/flights
